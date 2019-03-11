@@ -26,9 +26,9 @@ db.serialize(function(){
 		db.run("CREATE TABLE Measurements (M_Id integer NOT NULL PRIMARY KEY, Timestamp TEXT, DValue REAL, SensorId integer, FOREIGN KEY (SensorId) REFERENCES Sensors(SensorId))")
 		
 	}
-	console.log("DB: Adding test data")
+/* 	console.log("DB: Adding test data")
 	addNode("TF105", "Kuvaus")
-	addNode("TF106", "Kuvaus2")
+	addNode("TF106", "Kuvaus2") */
 	
 })
 

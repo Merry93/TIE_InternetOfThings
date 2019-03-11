@@ -43,7 +43,7 @@ serialport.list(function (err, ports) {
 })
 
 
-
+/* 
 // Posting hardcoded test messages. You can comment these out when implementing your own functionality
 var nodeData = {device: "TC219", description: "Wololoo"}
 console.log(nodeData)
@@ -93,7 +93,7 @@ request({
 }, function (error, response, body){
 	console.log(response.statusCode)
 	console.log(body)
-})
+}) */
 
 
 
@@ -110,5 +110,47 @@ function sendData(message)
 {
 	// React to your received message (from Arduino) by posting them into the server as 
 	// per your API desing
+	
+	try {
+		var input = JSON.parse(message);
+		if (typeof input.device !== "undefined") {
+			console.log("GW: detected AddNode JSON " + input.device);
+			request({
+				uri: "http://localhost:3333/nodes",
+				method: "POST",
+				json: true,
+				body: input
+			}, function (error, response, body){
+				console.log(response.statusCode)
+				console.log(body)
+			})
+		} else if (typeof input.nodeId !== "undefined") {
+			console.log("GW: detected AddSensor JSON " + input.nodeId);
+			request({
+				uri: "http://localhost:3333/nodes/1",
+				method: "POST",
+				json: true,
+				body: input
+			}, function (error, response, body){
+				console.log(response.statusCode)
+				console.log(body)
+			})
+		} else if (typeof input.sensorId !== "undefined") {
+			console.log("GW: detected AddMeas JSON " + input.sensorId);3
+			request({
+				uri: "http://localhost:3333/nodes/1/sensors/1",
+				method: "POST",
+				json: true,
+				body: input
+			}, function (error, response, body){
+				console.log(response.statusCode)
+				console.log(body)
+			})
+		}
+		
+	}
+		catch(err) {
+			console.log("GW: could not parse JSON")
+	}
 }
 
