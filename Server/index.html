@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="UTF-8">
+	    <title>Simple webpage for realtime sensordata</title>
+	    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+	    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+	</head>
+	
+	<body>
+		<script>
+			var socket = io('');
+			// This is used when request for the data is sent to server
+			function sendRequest()
+			{
+				var $inputs = $('#requestParameters :input')
+				var parameters = {}
+				$inputs.each(function() {
+					console.log(this.id)
+					parameters[this.id] = $(this).val()
+					console.log(parameters)
+				})
+				socket.emit('DataRequest', parameters)
+			}
+		</script>
+		<H2> Order real time measurements by giving device and sensor identifiers </H2>
+		<!-- You may add new fields if you want to be more specific or have more identifying information-->
+		<form id = "requestParameters" action = "">
+			Device: <br>
+			<input type = "text" id = device>
+			<br>
+			Sensor: <br>
+			<input type = "text" id = "sensor">
+			<br>
+			<button type="button" onclick="sendRequest()">Request</button>
+		</form>
+
+		<!--Canvas for chart-->
+		<div style = "width:50%">
+			Simple line chart for measurement with single value
+			<canvas id = "mchart" width="400" height = "400"> </canvas>
+		</div>
+		<script>
+			// Chart.js related stuff for the line chart
+			var chartdata = {
+				labels : ["0"],
+				datasets : [
+					{
+						label : "Measurement chart",
+						fillColor : "rgba(200,200,200,0.2)",
+						strokeColor : "rgba(200,200,200,1)",
+						pointColor : "rgba(200,200,200,1)",
+						pointStrokeColor : "#fff",
+						pointHighlightFill : "#fff",
+						pointHighlightStroke : "rgba(200,200,200,1)",
+						data : [0]
+					}
+				
+				]
+			}
+			
+			window.onload = function(){
+				var ctx = document.getElementById("mchart").getContext("2d");
+				window.myLine = new Chart(ctx).Line(chartdata, {
+					responsive: true
+				})
+			}
+			
+		</script>
+		
+		<ul id = "measurements"> </ul>
+		<script>
+			
+			socket.on('DataResponse', function(data){
+				console.log(data)
+				// First, simply add the value on page for you to see
+				$('#measurements').append($('<li>').text(data.value))
+				// Then, let us append the chart
+				// Below you have example line to append your value to the chart data. Even if you add only one value, you have to put it inside the 
+				// []-brackets to form an array. The second parameter shows on the X-axis.
+				//myLine.addData([data.value], 'timestamp')
+			});
+		</script>
+	</body>
+
+</html>
